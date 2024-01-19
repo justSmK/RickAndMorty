@@ -27,6 +27,9 @@
 		BB487F1F2B5993270096BC3B /* RMCharacterStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB487F1E2B5993270096BC3B /* RMCharacterStatus.swift */; };
 		BB487F212B5993470096BC3B /* RMCharacterGender.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB487F202B5993470096BC3B /* RMCharacterGender.swift */; };
 		BB51134E2B5A967200D396E3 /* RMGetAllCharactersResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB51134D2B5A967200D396E3 /* RMGetAllCharactersResponse.swift */; };
+		BBE4AE162B5ACBE100593E8D /* CharacterListViewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE4AE152B5ACBE100593E8D /* CharacterListViewViewModel.swift */; };
+		BBE4AE182B5ACC3500593E8D /* CharacterListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE4AE172B5ACC3500593E8D /* CharacterListView.swift */; };
+		BBE4AE1A2B5ACED200593E8D /*  Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE4AE192B5ACED200593E8D /*  Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +55,9 @@
 		BB487F1E2B5993270096BC3B /* RMCharacterStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMCharacterStatus.swift; sourceTree = "<group>"; };
 		BB487F202B5993470096BC3B /* RMCharacterGender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMCharacterGender.swift; sourceTree = "<group>"; };
 		BB51134D2B5A967200D396E3 /* RMGetAllCharactersResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RMGetAllCharactersResponse.swift; sourceTree = "<group>"; };
+		BBE4AE152B5ACBE100593E8D /* CharacterListViewViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterListViewViewModel.swift; sourceTree = "<group>"; };
+		BBE4AE172B5ACC3500593E8D /* CharacterListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CharacterListView.swift; sourceTree = "<group>"; };
+		BBE4AE192B5ACED200593E8D /*  Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = " Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +74,7 @@
 		BB0369752B585C9D00FFFCFF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				BBE4AE172B5ACC3500593E8D /* CharacterListView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -75,6 +82,7 @@
 		BB0369762B585CA000FFFCFF /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				BBE4AE152B5ACBE100593E8D /* CharacterListViewViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -86,6 +94,7 @@
 				BB4059BC2B585C5A00296E30 /* SceneDelegate.swift */,
 				BB4059C32B585C5C00296E30 /* Assets.xcassets */,
 				BB4059C52B585C5C00296E30 /* LaunchScreen.storyboard */,
+				BBE4AE192B5ACED200593E8D /*  Extensions.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -253,6 +262,7 @@
 			files = (
 				BB487F1A2B5991C60096BC3B /* RMOrigin.swift in Sources */,
 				BB487F1D2B5992290096BC3B /* RMSingleLocation.swift in Sources */,
+				BBE4AE182B5ACC3500593E8D /* CharacterListView.swift in Sources */,
 				BB51134E2B5A967200D396E3 /* RMGetAllCharactersResponse.swift in Sources */,
 				BB487F1F2B5993270096BC3B /* RMCharacterStatus.swift in Sources */,
 				BB487F212B5993470096BC3B /* RMCharacterGender.swift in Sources */,
@@ -266,8 +276,10 @@
 				BB487F102B598B710096BC3B /* RMService.swift in Sources */,
 				BB4059BB2B585C5A00296E30 /* AppDelegate.swift in Sources */,
 				BB487F182B598C1B0096BC3B /* RMEndpoint.swift in Sources */,
+				BBE4AE1A2B5ACED200593E8D /*  Extensions.swift in Sources */,
 				BB4059BD2B585C5A00296E30 /* SceneDelegate.swift in Sources */,
 				BB487F162B598BA30096BC3B /* RMRequest.swift in Sources */,
+				BBE4AE162B5ACBE100593E8D /* CharacterListViewViewModel.swift in Sources */,
 				BB0369882B585D4900FFFCFF /* RMEpisodeViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
