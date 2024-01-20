@@ -20,22 +20,18 @@ final class RMCharacterListViewViewModel: NSObject {
     
     private var isLoadingMoreCharacter = false
     
-    private var characters: [RMCharacter] = [] {
-        didSet {
-            for character in characters {
-                let viewModel = RMCharacterCollectionViewCellViewModel(
-                    characterName: character.name,
-                    characterStatus: character.status,
-                    characterImageUrl: URL(string: character.image)
-                )
-                if !cellViewModels.contains(viewModel) {
-                    cellViewModels.append(viewModel)
-                }
-            }
-        }
-    }
+    private var characters: [RMCharacter] = []
     
     private var cellViewModels: [RMCharacterCollectionViewCellViewModel] = []
+    
+    private func addViewModel(character: RMCharacter) {
+        let viewModel = RMCharacterCollectionViewCellViewModel(
+            characterName: character.name,
+            characterStatus: character.status,
+            characterImageUrl: URL(string: character.image)
+        )
+        cellViewModels.append(viewModel)
+    }
     
     private var apiInfo: RMGetAllCharactersResponse.Info? = nil
     
@@ -50,6 +46,11 @@ final class RMCharacterListViewViewModel: NSObject {
                 let results = responseModel.results
                 let info = responseModel.info
                 self?.characters = results
+                
+                for result in results {
+                    self?.addViewModel(character: result)
+                }
+                    
                 self?.apiInfo = info
                 DispatchQueue.main.async {
                     self?.delegate?.didLoadInitialCharacters()
@@ -86,6 +87,11 @@ final class RMCharacterListViewViewModel: NSObject {
                     return IndexPath(item: $0, section: 0)
                 })
                 strongSelf.characters.append(contentsOf: moreResults)
+                
+                for result in moreResults {
+                    strongSelf.addViewModel(character: result)
+                }
+                
                 DispatchQueue.main.async {
                     strongSelf.delegate?.didLoadMoreCharacter(
                         with: indexPathsToAdd
