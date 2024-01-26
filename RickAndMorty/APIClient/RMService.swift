@@ -6,6 +6,15 @@
 //
 
 import Foundation
+import OSLog
+
+extension Logger {
+    /// Using your bundle identifier is a great way to ensure a unique identifier.
+    private static var subsystem = Bundle.main.bundleIdentifier!
+
+    /// Logs the URLCache
+    static let cache = Logger(subsystem: subsystem, category: "cache")
+}
 
 /// Primary API service object to get Rick and Morty data
 final class RMService {
@@ -36,8 +45,8 @@ final class RMService {
         }
         
         if let cachedResponse = URLCache.shared.cachedResponse(for: urlRequest) {
-            print("Using cached API Response")
             let data = cachedResponse.data
+            Logger.cache.log("Using cached API Response \(urlRequest)")
             do {
                 let result = try JSONDecoder().decode(type.self, from: data)
                 completion(.success(result))
@@ -48,7 +57,7 @@ final class RMService {
         }
 
         let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
-            print("Execute API Request")
+            Logger.cache.log("Execute API Request \(urlRequest)")
             guard let data = data, let response = response, error == nil else {
                 completion(.failure(error ?? RMServiceError.failedToGetData))
                 return
