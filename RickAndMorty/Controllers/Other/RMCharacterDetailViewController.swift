@@ -7,6 +7,37 @@
 
 import UIKit
 
+#if canImport(SwiftUI) && DEBUG
+import SwiftUI
+struct UIViewControllerPreview<ViewController: UIViewController>: UIViewControllerRepresentable {
+    let viewController: ViewController
+
+    init(_ builder: @escaping () -> ViewController) {
+        viewController = builder()
+    }
+
+    // MARK: - UIViewControllerRepresentable
+    func makeUIViewController(context: Context) -> ViewController {
+        viewController
+    }
+    
+    func updateUIViewController(_ uiViewController: ViewController, context: Context) {
+        
+    }
+}
+
+//struct ViewController_Preview: PreviewProvider {
+//    static var previews: some View {
+//        UIViewControllerPreview {
+//            let rmCharacter = RMCharacter(id: 1, name: "Rick Sanchez", status: .alive, species: "Human", type: "", gender: .male, origin: .init(name: "Earth (C-137)", url: "https://rickandmortyapi.com/api/location/1"), location: .init(name: "Earth (Replacement Dimension)", url: "https://rickandmortyapi.com/api/location/20"), image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg", episode: [ "https://rickandmortyapi.com/api/episode/1", "https://rickandmortyapi.com/api/episode/2"], url: "https://rickandmortyapi.com/api/character/1", created: "2017-11-04T18:48:46.250Z")
+//            let viewModel = RMCharacterDetailViewViewModel(character: rmCharacter)
+//            let vc = RMCharacterDetailViewController(viewModel: viewModel)
+//            return vc
+//        }
+//    }
+//}
+#endif
+
 /// Controller to show into about single character
 final class RMCharacterDetailViewController: UIViewController {
     
@@ -111,6 +142,19 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
             let viewModel = viewModels[indexPath.item]
             cell.configure(with: viewModel)
             return cell
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let sectionType = viewModel.sections[indexPath.section]
+        switch sectionType {
+        case .photo, .information:
+            break
+        case .episodes:
+            let episodes = self.viewModel.episodes
+            let selection = episodes[indexPath.item]
+            let vc = RMEpisodeDetailViewController(url: URL(string: selection))
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
 }
