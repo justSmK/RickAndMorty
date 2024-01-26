@@ -12,8 +12,6 @@ final class RMService {
     /// Shared singletone instance
     static let shared = RMService()
     
-    private let cacheManager = RMAPICacheManager()
-    
     /// Privatized constructor
     private init() {}
     
@@ -32,39 +30,38 @@ final class RMService {
         expecting type: T.Type,
         completion: @escaping (Result<T, Error>) -> Void
     ) {
-        if let cachedData = cacheManager.cachedResponse(
-            for: request.endpoint,
-            url: request.url
-        ) {
+        guard let urlRequest = self.request(from: request) else {
+            completion(.failure(RMServiceError.failedToCreateRequest))
+            return
+        }
+        
+        if let cachedResponse = URLCache.shared.cachedResponse(for: urlRequest) {
             print("Using cached API Response")
+            let data = cachedResponse.data
             do {
-                let result = try JSONDecoder().decode(type.self, from: cachedData)
+                let result = try JSONDecoder().decode(type.self, from: data)
                 completion(.success(result))
             } catch {
                 completion(.failure(error))
             }
             return
         }
-        
-        guard let urlRequest = self.request(from: request) else {
-            completion(.failure(RMServiceError.failedToCreateRequest))
-            return
-        }
 
-        let task = URLSession.shared.dataTask(with: urlRequest) { [weak self] data, _, error in
-            guard let data = data, error == nil else {
+        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+            print("Execute API Request")
+            guard let data = data, let response = response, error == nil else {
                 completion(.failure(error ?? RMServiceError.failedToGetData))
                 return
+            }
+            
+            if let response = response as? HTTPURLResponse, (200...299) ~= response.statusCode {
+                let cachedData = CachedURLResponse(response: response, data: data)
+                URLCache.shared.storeCachedResponse(cachedData, for: urlRequest)
             }
             
             // Decode response
             do {
                 let result = try JSONDecoder().decode(type.self, from: data)
-                self?.cacheManager.setCache(
-                    for: request.endpoint,
-                    url: request.url,
-                    data: data
-                )
                 completion(.success(result))
             }
             catch {
