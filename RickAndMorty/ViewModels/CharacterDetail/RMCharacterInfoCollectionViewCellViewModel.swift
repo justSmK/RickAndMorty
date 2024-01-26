@@ -35,7 +35,6 @@ final class RMCharacterInfoCollectionViewCellViewModel {
         
         if type == .created,
             let date = Self.dateFormatter.date(from: value) {
-            print("Hello")
             return Self.shortDateFormatter.string(from: date)
         }
         
