@@ -21,6 +21,8 @@ final class RMService {
     /// Shared singletone instance
     static let shared = RMService()
     
+    private let jsonDecoder = JSONDecoder()
+    
     /// Privatized constructor
     private init() {}
     
@@ -56,7 +58,8 @@ final class RMService {
             return
         }
 
-        let task = URLSession.shared.dataTask(with: urlRequest) { data, response, error in
+        let task = URLSession.shared.dataTask(with: urlRequest) { [weak self] data, response, error in
+            guard let strongSelf = self else { return }
             Logger.cache.log("Execute API Request \(urlRequest)")
             guard let data = data, let response = response, error == nil else {
                 completion(.failure(error ?? RMServiceError.failedToGetData))
@@ -70,7 +73,7 @@ final class RMService {
             
             // Decode response
             do {
-                let result = try JSONDecoder().decode(type.self, from: data)
+                let result = try strongSelf.jsonDecoder.decode(type.self, from: data)
                 completion(.success(result))
             }
             catch {
@@ -81,6 +84,7 @@ final class RMService {
     }
     
     // MARK: - Private
+    
     private func request(from rmRequest: RMRequest) -> URLRequest? {
         guard let url = rmRequest.url else {
             return nil
