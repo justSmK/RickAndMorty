@@ -8,14 +8,6 @@
 import Foundation
 import OSLog
 
-extension Logger {
-    /// Using your bundle identifier is a great way to ensure a unique identifier.
-    private static var subsystem = Bundle.main.bundleIdentifier!
-
-    /// Logs the URLCache
-    static let cache = Logger(subsystem: subsystem, category: "cache")
-}
-
 /// Primary API service object to get Rick and Morty data
 final class RMService {
     /// Shared singletone instance
