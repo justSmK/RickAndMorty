@@ -1,5 +1,5 @@
 //
-//   Extensions.swift
+//  Extensions.swift
 //  RickAndMorty
 //
 //  Created by Sergei Semko on 1/19/24.

@@ -9,7 +9,7 @@ import Foundation
 
 struct RMLocationTableViewCellViewModel {
     private let location: RMLocation
-    
+
     init(location: RMLocation) {
         self.location = location
     }
@@ -19,7 +19,7 @@ struct RMLocationTableViewCellViewModel {
     }
     
     public var type: String {
-        return location.type
+        return "Type: " + location.type
     }
     
     public var dimension: String {
