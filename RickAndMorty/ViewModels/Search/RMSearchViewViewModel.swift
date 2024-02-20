@@ -21,7 +21,7 @@ final class RMSearchViewViewModel {
     
     private var optionMapUpdateBlock: (((RMSearchInputViewViewModel.DynamicOption, String)) -> Void)?
     
-    private var searchResultHandler: (() -> Void)?
+    private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
     
     // MARK: - Init
 
@@ -31,13 +31,11 @@ final class RMSearchViewViewModel {
     
     // MARK: - Public
     
-    public func registerSearchResultHandler(_ block: @escaping () -> Void) {
+    public func registerSearchResultHandler(_ block: @escaping (RMSearchResultViewModel) -> Void) {
         self.searchResultHandler = block
     }
     
     public func executeSearch() {
-        print("Search text \(searchText)")
-        
         // Build arguments
         var queryParams: [URLQueryItem] = [
             URLQueryItem(name: "name", value: searchText) // .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
@@ -57,16 +55,53 @@ final class RMSearchViewViewModel {
             queryParameters: queryParams
         )
         
-        print(request.url?.absoluteString)
-        
-        RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) { result in
+        switch config.type.endpoint {
+        case .character:
+            makeSearchAPICall(RMGetAllCharactersResponse.self, request: request)
+        case .episode:
+            makeSearchAPICall(RMGetAllEpisodesResponse.self, request: request)
+        case .location:
+            makeSearchAPICall(RMGetAllLocationsResponse.self, request: request)
+        }
+    }
+    
+    private func makeSearchAPICall<T: Decodable>(_ type: T.Type, request: RMRequest) {
+        RMService.shared.execute(request, expecting: type) { [weak self] result in
             // Notify view of results, no results, or error
             switch result {
             case .success(let model):
-                print("Search results found: \(model.results.count)")
-            case .failure:
+                self?.processSearchResults(model)
+            case .failure(let error):
+                print("Failed to get results \(String(describing: error.localizedDescription))")
                 break
             }
+        }
+    }
+    
+    private func processSearchResults(_ model: Decodable) {
+        var resultsVM: RMSearchResultViewModel?
+        if let characterResults = model as? RMGetAllCharactersResponse {
+            resultsVM = .characters(characterResults.results.compactMap {
+                RMCharacterCollectionViewCellViewModel(
+                    characterName: $0.name,
+                    characterStatus: $0.status,
+                    characterImageUrl: URL(string: $0.image)
+                )
+            })
+        } else if let episodesResults = model as? RMGetAllEpisodesResponse {
+            resultsVM = .episodes(episodesResults.results.compactMap {
+                RMCharacterEpisodeCollectionViewCellViewModel(episodeDataUrl: URL(string: $0.url))
+            })
+        } else if let locationsResults = model as? RMGetAllLocationsResponse {
+            resultsVM = .locations(locationsResults.results.compactMap {
+                RMLocationTableViewCellViewModel(location: $0)
+            })
+        }
+        
+        if let results = resultsVM {
+            self.searchResultHandler?(results)
+        } else {
+            // Fallback
         }
         
     }
@@ -74,7 +109,7 @@ final class RMSearchViewViewModel {
     public func set(query text: String) {
         self.searchText = text
     }
-
+    
     public func set(value: String, for option: RMSearchInputViewViewModel.DynamicOption) {
         optionMap[option] = value
         let tuple = (option, value)
