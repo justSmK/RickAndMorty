@@ -8,7 +8,8 @@
 import UIKit
 
 protocol RMLocationViewDelegate: AnyObject {
-    func rmLocationView(_ locationView: RMLocationView, didSelect location: RMLocation)
+    func rmLocationView(_ locationView: RMLocationView, 
+                        didSelect location: RMLocation)
 }
 
 final class RMLocationView: UIView {
@@ -22,6 +23,15 @@ final class RMLocationView: UIView {
             tableView.reloadData()
             UIView.animate(withDuration: 0.3) { [weak self] in
                 self?.tableView.alpha = 1
+            }
+            
+            viewModel?.registerDidFinishPaginationBlock { [weak self] in
+                DispatchQueue.main.async {
+                    // Loading indicator go bye bye
+                    self?.tableView.tableFooterView = nil
+                    // Reload data
+                    self?.tableView.reloadData()
+                }
             }
         }
     }
@@ -82,6 +92,8 @@ final class RMLocationView: UIView {
     }
 }
 
+// MARK: - UITableViewDelegate
+
 extension RMLocationView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -91,6 +103,8 @@ extension RMLocationView: UITableViewDelegate {
         delegate?.rmLocationView(self, didSelect: locationModel)
     }
 }
+
+// MARK: - UITableViewDataSource
 
 extension RMLocationView: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -114,4 +128,34 @@ extension RMLocationView: UITableViewDataSource {
         return cell
     }
     
+}
+
+// MARK: - UIScrollViewDelegate
+
+// FIXME: Double fetchAdditionalLocations()
+extension RMLocationView: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard let viewModel = viewModel,
+              !viewModel.cellViewModels.isEmpty,
+              viewModel.shouldShowLoadMoreIndicator,
+              !viewModel.isLoadingMoreLocations else {
+            return
+        }
+        Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] timer in
+            let offset = scrollView.contentOffset.y
+            let totalContentHeight = scrollView.contentSize.height
+            let totalScrollViewFixedHeight = scrollView.frame.size.height
+            
+            if offset >= (totalContentHeight - totalScrollViewFixedHeight - 120) {
+                self?.showLoadingIndicator()
+                viewModel.fetchAdditionalLocations()
+            }
+            timer.invalidate()
+        }
+    }
+    
+    private func showLoadingIndicator() {
+        let footer = RMTableLoadingFooterView(frame: .init(x: 0, y: 0, width: frame.size.width, height: 100))
+        tableView.tableFooterView = footer
+    }
 }
