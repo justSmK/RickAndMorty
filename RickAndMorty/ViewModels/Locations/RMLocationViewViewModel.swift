@@ -70,22 +70,12 @@ final class RMLocationViewViewModel {
                 let info = responseModel.info
                 strongSelf.apiInfo = info
                 
-//                let originalCount = strongSelf.episodes.count
-//                let newCount = moreResults.count
-//                let total = originalCount + newCount
-//                let startingIndex = total - newCount
-//                let indexPathsToAdd: [IndexPath] = Array(startingIndex ..< (startingIndex + newCount)).compactMap({
-//                    return IndexPath(item: $0, section: 0)
-//                })
-//                strongSelf.episodes.append(contentsOf: moreResults)
-//
-//                for result in moreResults {
-//                    strongSelf.addViewModel(episode: result)
-//                }
+                strongSelf.locations.append(contentsOf: moreResults)
 
-                strongSelf.cellViewModels.append(contentsOf: moreResults.compactMap({
-                    return RMLocationTableViewCellViewModel(location: $0)
-                }))
+                for result in moreResults {
+                    strongSelf.addViewModel(location: result)
+                }
+
                 DispatchQueue.main.async {
                     strongSelf.isLoadingMoreLocations = false
                     
