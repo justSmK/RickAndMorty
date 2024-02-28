@@ -36,15 +36,6 @@ final class RMEpisodeListViewViewModel: NSObject {
     
     private var cellViewModels: [RMCharacterEpisodeCollectionViewCellViewModel] = []
     
-    private func addViewModel(episode: RMEpisode) {
-        let url = URL(string: episode.url)
-        let viewModel = RMCharacterEpisodeCollectionViewCellViewModel(
-            episodeDataUrl: url,
-            borderColor: borderColors.randomElement() ?? .systemBlue
-        )
-        cellViewModels.append(viewModel)
-    }
-    
     private var apiInfo: RMGetAllEpisodesResponse.Info? = nil
     
     /// Fetch initial set of episodes (20)
@@ -59,9 +50,12 @@ final class RMEpisodeListViewViewModel: NSObject {
                 let info = responseModel.info
                 self?.episodes = results
                 
-                for result in results {
-                    self?.addViewModel(episode: result)
-                }
+                self?.cellViewModels.append(contentsOf: results.compactMap({
+                    return RMCharacterEpisodeCollectionViewCellViewModel(
+                        episodeDataUrl: URL(string: $0.url),
+                        borderColor: self?.borderColors.randomElement() ?? .systemBlue
+                    )
+                }))
                     
                 self?.apiInfo = info
                 DispatchQueue.main.async {
@@ -100,9 +94,12 @@ final class RMEpisodeListViewViewModel: NSObject {
                 })
                 strongSelf.episodes.append(contentsOf: moreResults)
                 
-                for result in moreResults {
-                    strongSelf.addViewModel(episode: result)
-                }
+                strongSelf.cellViewModels.append(contentsOf: moreResults.compactMap({
+                    return RMCharacterEpisodeCollectionViewCellViewModel(
+                        episodeDataUrl: URL(string: $0.url),
+                        borderColor: strongSelf.borderColors.randomElement() ?? .systemBlue
+                    )
+                }))
                 
                 DispatchQueue.main.async {
                     strongSelf.delegate?.didLoadMoreEpisodes(

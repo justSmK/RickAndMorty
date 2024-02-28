@@ -17,11 +17,6 @@ final class RMLocationViewViewModel {
     
     private var locations: [RMLocation] = []
     
-    private func addViewModel(location: RMLocation) {
-        let viewModel = RMLocationTableViewCellViewModel(location: location)
-        cellViewModels.append(viewModel)
-    }
-    
     // Location response info
     // Will contain next url, if present
     private var apiInfo: RMGetAllLocationsResponse.Info?
@@ -71,10 +66,10 @@ final class RMLocationViewViewModel {
                 strongSelf.apiInfo = info
                 
                 strongSelf.locations.append(contentsOf: moreResults)
-
-                for result in moreResults {
-                    strongSelf.addViewModel(location: result)
-                }
+                
+                strongSelf.cellViewModels.append(contentsOf: moreResults.compactMap({
+                    return RMLocationTableViewCellViewModel(location: $0)
+                }))
 
                 DispatchQueue.main.async {
                     strongSelf.isLoadingMoreLocations = false
@@ -107,9 +102,9 @@ final class RMLocationViewViewModel {
                 self?.apiInfo = model.info
                 self?.locations = model.results
                 
-                for result in model.results {
-                    self?.addViewModel(location: result)
-                }
+                self?.cellViewModels.append(contentsOf: model.results.compactMap({
+                    return RMLocationTableViewCellViewModel(location: $0)
+                }))
                 
                 DispatchQueue.main.async {
                     self?.delegate?.didFetchInitialLocations()

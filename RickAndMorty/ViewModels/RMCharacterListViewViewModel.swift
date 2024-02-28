@@ -24,15 +24,6 @@ final class RMCharacterListViewViewModel: NSObject {
     
     private var cellViewModels: [RMCharacterCollectionViewCellViewModel] = []
     
-    private func addViewModel(character: RMCharacter) {
-        let viewModel = RMCharacterCollectionViewCellViewModel(
-            characterName: character.name,
-            characterStatus: character.status,
-            characterImageUrl: URL(string: character.image)
-        )
-        cellViewModels.append(viewModel)
-    }
-    
     private var apiInfo: RMGetAllCharactersResponse.Info? = nil
     
     /// Fetch initial set of characters (20)
@@ -47,9 +38,13 @@ final class RMCharacterListViewViewModel: NSObject {
                 let info = responseModel.info
                 self?.characters = results
                 
-                for result in results {
-                    self?.addViewModel(character: result)
-                }
+                self?.cellViewModels.append(contentsOf: results.compactMap({
+                    return RMCharacterCollectionViewCellViewModel(
+                        characterName: $0.name,
+                        characterStatus: $0.status,
+                        characterImageUrl: URL(string: $0.image)
+                    )
+                }))
                     
                 self?.apiInfo = info
                 DispatchQueue.main.async {
@@ -88,9 +83,13 @@ final class RMCharacterListViewViewModel: NSObject {
                 })
                 strongSelf.characters.append(contentsOf: moreResults)
                 
-                for result in moreResults {
-                    strongSelf.addViewModel(character: result)
-                }
+                strongSelf.cellViewModels.append(contentsOf: moreResults.compactMap({
+                    return RMCharacterCollectionViewCellViewModel(
+                        characterName: $0.name,
+                        characterStatus: $0.status,
+                        characterImageUrl: URL(string: $0.image)
+                    )
+                }))
                 
                 DispatchQueue.main.async {
                     strongSelf.delegate?.didLoadMoreCharacter(
