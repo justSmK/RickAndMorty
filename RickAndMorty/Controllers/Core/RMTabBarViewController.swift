@@ -8,11 +8,13 @@
 import UIKit
 
 /// Controller to house tabs and root tab controllers
+// TODO: Use UIPageVC with UITabBarView instead UITabBarVC
 final class RMTabBarViewController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpTabs()
+        setUpSwipeGestures()
     }
 
     private func setUpTabs() {
@@ -56,8 +58,33 @@ final class RMTabBarViewController: UITabBarController {
         }
         
         setViewControllers(navControllers, animated: true)
-        
     }
-
 }
 
+// MARK: - UISwipeGestureRecognizer Navigation
+
+private extension RMTabBarViewController {
+    
+    func setUpSwipeGestures() {
+        let swipeRight = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
+        swipeRight.direction = .right
+        view.addGestureRecognizer(swipeRight)
+        
+        let swipeLeft = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipe))
+        swipeLeft.direction = .left
+        view.addGestureRecognizer(swipeLeft)
+    }
+    
+    @objc
+    private func handleSwipe(_ sender: UISwipeGestureRecognizer) {
+        if sender.direction == .left {
+            if selectedIndex < (viewControllers?.count ?? 1) - 1 {
+                selectedIndex += 1
+            }
+        } else if sender.direction == .right {
+            if selectedIndex > 0 {
+                selectedIndex -= 1
+            }
+        }
+    }
+}
