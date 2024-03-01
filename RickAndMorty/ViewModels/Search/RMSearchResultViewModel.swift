@@ -96,8 +96,6 @@ final class RMSearchResultViewModel {
             return
         }
         
-        
-        
         switch results {
         case .characters(let existingResults):
             RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) { [weak self] result in
@@ -112,7 +110,7 @@ final class RMSearchResultViewModel {
                         return RMCharacterCollectionViewCellViewModel(
                             characterName: $0.name,
                             characterStatus: $0.status,
-                            characterImageUrl: URL(string: $0.url)
+                            characterImageUrl: URL(string: $0.image)
                         )
                     })
                     
