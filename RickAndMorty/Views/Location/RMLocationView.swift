@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Interface to relay location view events
 protocol RMLocationViewDelegate: AnyObject {
     func rmLocationView(_ locationView: RMLocationView, 
                         didSelect location: RMLocation)

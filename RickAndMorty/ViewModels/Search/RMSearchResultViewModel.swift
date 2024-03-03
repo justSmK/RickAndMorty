@@ -62,6 +62,7 @@ final class RMSearchResultViewModel {
                     break
                 }
                 
+                
 //                strongSelf.locations.append(contentsOf: moreResults)
                 
 
