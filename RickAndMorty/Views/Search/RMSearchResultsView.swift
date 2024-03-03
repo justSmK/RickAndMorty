@@ -9,6 +9,8 @@ import UIKit
 
 protocol RMSearchResultsViewDelegate: AnyObject {
     func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapLocationAt index: Int)
+    func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapCharacterAt index: Int)
+    func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapEpisodeAt index: Int)
 }
 
 /// Shows search results UI (table or collection as needed)
@@ -34,7 +36,7 @@ final class RMSearchResultsView: UIView {
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
-        layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.isHidden = true
@@ -188,19 +190,27 @@ extension RMSearchResultsView: UICollectionViewDelegate, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
-        
         // TODO: Handle cell tap
-        
+        guard let viewModel else {
+            return
+        }
+        switch viewModel.results {
+        case .characters:
+            delegate?.rmSearchResultsView(self, didTapCharacterAt: indexPath.item)
+        case .episodes:
+            delegate?.rmSearchResultsView(self, didTapEpisodeAt: indexPath.item)
+        case .locations:
+            break
+            
+        }
     }
     
-    // TODO: Fix size
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let currentViewModel = collectionViewCellViewModels[indexPath.item]
         
         if currentViewModel is RMCharacterCollectionViewCellViewModel {
             // Character size
             let bounds = UIScreen.main.bounds
-    //        let bounds = collectionView.window?.windowScene?.screen.bounds
             let width = UIDevice.isiPhone ? (bounds.width - 30) / 2 : (bounds.width - 50) / 4
             return CGSize(
                 width: width,
